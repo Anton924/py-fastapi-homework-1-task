@@ -1,7 +1,6 @@
-from http.client import HTTPResponse
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,18 +22,18 @@ async def read_movies(
             detail=[
                 {
                     "loc": ["query", "page"],
-                    "msg": "Input should be greater than or equal to 1",
+                    "msg": "ensure this value is greater than or equal to 1",
                     "type": "value_error.number.not_ge"
                 }
             ]
         )
-    if not per_page >= 1:
+    if not 20 >= per_page >= 1:
         raise HTTPException(
             status_code=422,
             detail=[
                 {
                     "loc": ["query", "per_page"],
-                    "msg": "Input should be greater than or equal to 1",
+                    "msg": "ensure this value is greater than or equal to 1",
                     "type": "value_error.number.not_ge"
                 }
             ]
@@ -63,11 +62,19 @@ async def read_movies(
     )
 
     movies = result.all()
+    prev_page = page - 1 if page != 1 else None
+    next_page = page + 1 if page != total_pages else None
+
+    if prev_page:
+        prev_page = f"/theater/movies/?page={prev_page}&per_page={per_page}"
+
+    if next_page:
+        next_page = f"/theater/movies/?page={next_page}&per_page={per_page}"
 
     return MovieListResponseSchema(
         movies=movies,
-        prev_page=(page - 1) if page != 1 else None,
-        next_page=(page + 1) if page != total_pages else None,
+        prev_page=prev_page,
+        next_page=next_page,
         total_pages=total_pages,
         total_items=total_items
     )

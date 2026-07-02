@@ -72,9 +72,9 @@ async def test_get_movies_with_custom_parameters(client, seed_database):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("page, per_page, expected_detail", [
-    (0, 10, "Input should be greater than or equal to 1"),
-    (1, 0, "Input should be greater than or equal to 1"),
-    (0, 0, "Input should be greater than or equal to 1"),
+    (0, 10, "ensure this value is greater than or equal to 1"),
+    (1, 0, "ensure this value is greater than or equal to 1"),
+    (0, 0, "ensure this value is greater than or equal to 1"),
 ])
 async def test_invalid_page_and_per_page(client, page, per_page, expected_detail):
     """
